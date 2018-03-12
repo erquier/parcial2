@@ -4,9 +4,9 @@ import java.util.ArrayList;
 import java.util.HashMap;
 import java.util.Map;
 
-import org.eclipse.jetty.client.api.Request;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
+
 
 import spark.ModelAndView;
 import spark.template.freemarker.FreeMarkerEngine;
@@ -16,6 +16,52 @@ public class App {
     	Logger log = LoggerFactory.getLogger(App.class);
     	
     	staticFiles.location("/public");
+    	
+    	//before
+    	before((req, res) ->{
+    		ArrayList<User> lista = req.session().attribute("usuarios");
+    		
+    		if(lista == null) {
+    			lista = new ArrayList<User>();
+    		}
+    		
+    		// usuario administrador
+    		
+    		boolean isAdminCreated = false;
+    		for(User u: lista) {
+    			if(u.getNombre() == "admin") {
+    				isAdminCreated = true;
+    			}
+    		}
+    		
+    		if(!isAdminCreated) {
+    			User u = new User ("admin", "admin", "0");
+    			lista.add(u);
+    			log.info("admin creado");
+    		}
+    		
+    		req.session().attribute("usuarios", lista);
+    		
+    	});
+    	
+    	before("/no-entre" ,(req,res) -> {  
+    		
+    		User user = req.session().attribute("user");
+    		res.redirect("/start");
+    		if (user == null) { halt(401, "Se equivoco, Bai"); }
+    	});
+    	
+    	
+    	exception(SessionNoLogeada.class, (e,req,res) -> {
+    		
+    		res.status(401); 
+    		res.body(e.toString());
+    	});
+    	
+    	
+    	before("/articulos/*", (req, res)->{
+   		 halt(302, "working on it");	
+   	 });
     	
     	
     	 get("/", (req , res) -> {
@@ -52,15 +98,40 @@ public class App {
          	return new ModelAndView(model, "aboutus.ftl");
           }, new FreeMarkerEngine());
     	 
-    	 get("/login", (req , res) -> {
+    	 
+    	 
+    	 //Login
+    	 get("/iniciar-session", (req , res) -> {
     		 Map<String, Object> model = new HashMap<>();
            	res.status(200);
          	return new ModelAndView(model, "login.ftl");
           }, new FreeMarkerEngine());
     	 
-    	 before("/articulos/*", (req, res)->{
-    		 halt(302, "working on it");	
-    	 });
+    	 post("/iniciar-session", (req, res)->{
+    		 	String nombre = req.queryParams("nombre");
+    			
+    			ArrayList<User> lista = req.session().attribute("login");
+
+    			
+    			if(lista == null)  {return "list equals null , you can't Log in";}
+    				
+    				boolean inicioSesion = false;
+    				for(User u : lista) {
+    				
+    				if(u.getNombre() == nombre) { 
+    					req.session().attribute("usuarioIniciado", u);
+    					inicioSesion = true;
+    					}
+    			}
+    				if (inicioSesion) {return "Loged in succesfully";}
+    				
+    				
+    				
+    			return "not loged, need to log in";
+    		});//FIN INICIO SESION
+    	
+    	    	 
+    	 
     	 
     	 //REGISTRO
     	 get("/registro", (req , res) -> {
@@ -71,9 +142,10 @@ public class App {
     	 
     	  
     	  post("/registro", (req, res)->{
-    		 String nombre = req.queryParams("Name");
-    		 String correo = req.queryParams("Email");
-    		 String password = req.queryParams("Pass");
+    		  log.info("testing testing U.U");
+    		 String nombre = req.queryParams("nombre");
+    		 String correo = req.queryParams("correo");
+    		 String password = req.queryParams("password");
     		 
     		 User user = new User (nombre, correo, password);
     		 ArrayList<User> Names = req.session().attribute("usuarios");
@@ -82,6 +154,7 @@ public class App {
     		 }
     		 Names.add(user);
     		 req.session().attribute("usuarios",Names);
+    		 res.redirect("/me");
     		 
     		 return user.getInfo();
     	 });

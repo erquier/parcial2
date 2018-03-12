@@ -34,6 +34,6 @@ public class User {
 
 	public String getInfo() {
 		// TODO Auto-generated method stub
-		return null;
+		return this.nombre +"  "+ this.correo+" "+ this.password;
+		}//fin getInfo
 	}
-}

@@ -7,11 +7,11 @@
         <div class="container" id="navbar">
             <div class="btn-group" role="group">
                 <button class="btn btn-default" type="button" onclick="displayhidehome()"><a href="/home"> HOME </a> </button>
-                <button class="btn btn-default" type="button" onclick="displayhideproducts()"><a href="/products"> PRODUCTS </a> </button>
+                <button class="btn btn-default" type="button" onclick="displayhideproducts()"><a href="/articulos"> PRODUCTS </a> </button>
                 <button class="btn btn-default" type="button" onclick="displayhideaboutus()"><a href="/aboutus"> ABOUT US </a> </button>
                 <button class="btn btn-default" type="button" onclick="displayhidecontactus()"><a href="/contactus"> CONTACT US </a></button>
-                <button class="btn btn-default" type="button" onclick="displayhideLogin()"><a href="/login"> LOG IN </a></button>
-                <button class="btn btn-default" type="button" onclick="displayhideRegister()"><a href="/register"> REGISTER </a></button>
+                <button class="btn btn-default" type="button" onclick="displayhideLogin()"><a href="/iniciar-session"> LOG IN </a></button>
+                <button class="btn btn-default" type="button" onclick="displayhideRegister()"><a href="/registro"> REGISTER </a></button>
                 <button class="btn btn-default" type="button" onclick="displayhideME()"><a href="/me">ME</a></button>
             </div>
         </div>
